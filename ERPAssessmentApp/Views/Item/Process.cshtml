@@ -1,0 +1,72 @@
+﻿@model ERPAssessmentApp.Models.Item
+
+@{
+    ViewData["Title"] = "Process Item";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm mb-4 border-primary">
+        <div class="card-body bg-light">
+            <h5 class="text-primary mb-0">Processing Parent Item: <strong>@Model.ItemName</strong> (Weight: @Model.Weight)</h5>
+        </div>
+    </div>
+
+    <form asp-action="Process" method="post">
+        <input type="hidden" name="id" value="@Model.ItemId" />
+        
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Generated Output Items (Children)</h5>
+                <button type="button" class="btn btn-sm btn-success" onclick="addRow()">+ Add Row</button>
+            </div>
+            <div class="card-body">
+                <table class="table" id="childItemsTable">
+                    <thead>
+                        <tr>
+                            <th>Child Item Name</th>
+                            <th>Weight</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" name="ChildItemNames" class="form-control" required /></td>
+                            <td><input type="number" step="0.01" name="ChildWeights" class="form-control" required /></td>
+                            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Complete Processing</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function addRow() {
+        var table = document.getElementById("childItemsTable").getElementsByTagName('tbody')[0];
+        var newRow = table.insertRow(table.rows.length);
+        newRow.innerHTML = `
+            <td><input type="text" name="ChildItemNames" class="form-control" required /></td>
+            <td><input type="number" step="0.01" name="ChildWeights" class="form-control" required /></td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
+        `;
+    }
+
+    function removeRow(button) {
+        var row = button.parentNode.parentNode;
+        if (document.getElementById("childItemsTable").getElementsByTagName('tbody')[0].rows.length > 1) {
+            row.parentNode.removeChild(row);
+        } else {
+            alert("You must generate at least one output item.");
+        }
+    }
+</script>

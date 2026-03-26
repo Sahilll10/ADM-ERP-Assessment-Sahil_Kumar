@@ -1,0 +1,86 @@
+﻿@model IEnumerable<ERPAssessmentApp.Models.Item>
+
+@{
+    ViewData["Title"] = "Tree Structure";
+    var topLevelItems = Model.Where(i => i.ParentItemId == null);
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+            <h3 class="text-primary fw-bold">Parent/Child Traceability Tree</h3>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Back to Inventory</a>
+        </div>
+        <div class="card-body">
+            <div class="tree-container p-4 bg-light rounded">
+                @if (!topLevelItems.Any())
+                {
+                    <p class="text-muted">No items available to trace.</p>
+                }
+                else
+                {
+                    <ul class="custom-tree">
+                        @foreach (var item in topLevelItems)
+                        {
+                            <partial name="_TreeNode" model="new Tuple<ERPAssessmentApp.Models.Item, IEnumerable<ERPAssessmentApp.Models.Item>>(item, Model)" />
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .tree-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow-x: auto;
+    }
+    .custom-tree, .custom-tree ul {
+        list-style-type: none;
+        padding-left: 30px;
+        position: relative;
+    }
+    .custom-tree {
+        padding-left: 0;
+    }
+    .custom-tree ul::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 15px;
+        bottom: 0;
+        width: 2px;
+        background-color: #adb5bd;
+    }
+    .custom-tree li {
+        margin: 15px 0;
+        position: relative;
+    }
+    .custom-tree li::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: -15px;
+        width: 15px;
+        height: 2px;
+        background-color: #adb5bd;
+    }
+    .custom-tree > li::before {
+        display: none;
+    }
+    .tree-box {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        min-width: 250px;
+    }
+    .status-badge {
+        font-size: 0.8em;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+</style>

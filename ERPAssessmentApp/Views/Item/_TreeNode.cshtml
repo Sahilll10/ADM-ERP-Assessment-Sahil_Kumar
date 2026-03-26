@@ -1,0 +1,38 @@
+﻿@model Tuple<ERPAssessmentApp.Models.Item, IEnumerable<ERPAssessmentApp.Models.Item>>
+
+@{
+    var currentItem = Model.Item1;
+    var allItems = Model.Item2;
+    var children = allItems.Where(i => i.ParentItemId == currentItem.ItemId).ToList();
+    
+    var borderColor = currentItem.IsProcessed ? "#198754" : "#0d6efd";
+}
+
+<li>
+    <div class="tree-box" style="border-left: 5px solid @borderColor;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <strong class="fs-5">@currentItem.ItemName</strong>
+            @if (currentItem.IsProcessed)
+            {
+                <span class="status-badge bg-success text-white">Processed</span>
+            }
+            else
+            {
+                <span class="status-badge bg-primary text-white">Raw</span>
+            }
+        </div>
+        <div class="text-muted small">
+            Weight: <strong>@currentItem.Weight</strong> | ID: #@currentItem.ItemId
+        </div>
+    </div>
+    
+    @if (children.Any())
+    {
+        <ul>
+            @foreach (var child in children)
+            {
+                <partial name="_TreeNode" model="new Tuple<ERPAssessmentApp.Models.Item, IEnumerable<ERPAssessmentApp.Models.Item>>(child, allItems)" />
+            }
+        </ul>
+    }
+</li>
